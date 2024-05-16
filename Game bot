@@ -1,0 +1,113 @@
+-- Initializing global variables to store the latest game state and game host process.
+LatestGameState = LatestGameState or nil
+InAction = InAction or false -- Prevents the agent from taking multiple actions at once.
+
+Game = "0rVZYFxvfJpO__EfOz0_PUQ3GFE9kEaES0GkUDNXjvE"
+
+colors = {
+  red = "\27[31m",
+  green = "\27[32m",
+  blue = "\27[34m",
+  reset = "\27[0m",
+  gray = "\27[90m"
+}
+
+-- Checks if two points are within a given range.
+-- @param x1, y1: Coordinates of the first point.
+-- @param x2, y2: Coordinates of the second point.
+-- @param range: The maximum allowed distance between the points.
+-- @return: Boolean indicating if the points are within the specified range.
+function inRange(x1, y1, x2, y2, range)
+    return math.abs(x1 - x2) <= range and math.abs(y1 - y2) <= range
+end
+
+function inRange(x1, y1, x2, y2, range)
+    local distance = math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
+    return distance <= range
+end
+
+-- Example function call
+local x1, y1 = 0, 0
+local x2, y2 = 7, 9
+local maximumRange = 10
+
+if inRange(x1, y1, x2, y2, maximumRange) then
+    print("Points are within range")
+else
+    print("Points are out of range")
+end
+
+function attackIfInRangeAndStronger(x1, y1, x2, y2, range, myEnergy, enemyEnergy)
+    local distance = math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
+    
+    if distance <= range then
+        if enemyEnergy < myEnergy then
+            print("Enemy attacked with green color.")
+        else
+            print("Enemy is too strong to attack.")
+        end
+    else
+        print("Enemy is too far to attack.")
+    end
+end
+
+-- Function to check if energy is enough
+function checkEnergy(myEnergy, requiredEnergy)
+    if myEnergy >= requiredEnergy then
+        return true
+    else
+        return false
+    end
+end
+
+-- Coordinates and energy
+local myX, myY = 0, 0
+local enemyX, enemyY = 7, 9
+local maximumRange = 10
+local myEnergy = 20
+local enemyEnergy = 30
+local requiredEnergy = 30
+
+-- Check if energy is enough
+if checkEnergy(myEnergy, requiredEnergy) then
+    attackIfInRangeAndStronger(myX, myY, enemyX, enemyY, maximumRange, myEnergy, enemyEnergy)
+else
+    print("Energy is not enough.", "red")
+end
+
+-- Function to evade randomly
+function evadeRandomly(x, y)
+    local directions = {"up", "down", "right", "left"}
+    local randomDirection = directions[math.random(#directions)]
+    print("Player evaded to the " .. randomDirection .. " with blue color.")
+end
+
+-- Check if energy is enough
+if checkEnergy(myEnergy, requiredEnergy) then
+    attackIfInRangeAndStronger(myX, myY, enemyX, enemyY, maximumRange, myEnergy, enemyEnergy)
+else
+    if myEnergy < enemyEnergy then
+        evadeRandomly(myX, myY)
+    else
+        print("Energy is not enough.", "red")
+    end
+end
+
+-- Function to print current energy with gray color
+function printCurrentEnergy(energy)
+    print("Current energy level: " .. energy .. " with grey color.")
+end
+
+-- Check if energy is enough
+if checkEnergy(myEnergy, requiredEnergy) then
+    attackIfInRangeAndStronger(myX, myY, enemyX, enemyY, maximumRange, myEnergy, enemyEnergy)
+else
+    if myEnergy < enemyEnergy then
+        evadeRandomly(myX, myY)
+    elseif myEnergy == enemyEnergy then
+        printCurrentEnergy(myEnergy)
+    else
+        print("Energy is not enough.", "red")
+    end
+end
+
