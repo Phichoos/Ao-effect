@@ -26,7 +26,7 @@ function inRange(x1, y1, x2, y2, range)
     return distance <= range
 end
 
--- Example function call
+--function call
 local x1, y1 = 0, 0
 local x2, y2 = 7, 9
 local maximumRange = 10
@@ -110,4 +110,22 @@ else
         print("Energy is not enough.", "red")
     end
 end
+-- Handler to print game announcements and trigger game state updates.
+Handlers.add(
+  "PrintAnnouncements",
+  Handlers.utils.hasMatchingTag("Action", "Announcement"),
+  function (msg)
+    if msg.Event == "Started-Waiting-Period" then
+      ao.send({Target = ao.id, Action = "AutoPay"})
+    elseif (msg.Event == "Tick" or msg.Event == "Started-Game") and not InAction then
+      InAction = true 
+      ao.send({Target = Game, Action = "GetGameState"})
+    elseif InAction then 
+      print("Previous action still in progress. Skipping.")
+    end
+    print(colors.green .. msg.Event .. ": " .. msg.Data .. colors.reset)
+  end
+)
+
+
 
